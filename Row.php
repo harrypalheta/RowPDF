@@ -1,5 +1,5 @@
 <?php
-require_once('fpdf.php');
+require('fpdf17/fpdf.php');
 
 class Row extends FPDF
 {
@@ -14,7 +14,7 @@ class Row extends FPDF
     var $widths;   
     var $resetar;   
 
-    function __construct()
+   function __construct()
        {
           parent::FPDF();
        }
@@ -173,7 +173,6 @@ class Row extends FPDF
             //Print the text
             $this->AutoPageBreak = false;
             $this->MultiCell($w, ($this->heights ? $this->heights : 5), $data[$i], $b, $a, $bfc);
-            
             //Put the position to the right of the cell
             $this->SetXY($x + $w, $y);
         }
@@ -272,7 +271,7 @@ class Row extends FPDF
          * 
          * OBS: para cada CHAVE pode-se receber UM VALOR ou um ARRAY com valores
          * 
-         * @param mixed[] $config Array de configurações com chave e valores
+         * @param Array[] $config Array de configurações com chave e valores
          * 
          * Exemplo para colunas padronizadas (como um theader):
 
@@ -298,7 +297,7 @@ class Row extends FPDF
             $key == 'align'         ? $this->SetAligns($value)      : false;
             $key == 'background'    ? $this->SetBackgrounds($value) : false;
             $key == 'border'        ? $this->SetBorders($value)     : false;
-            $key == 'fill'          ? $this->SetFills($value)   : false;
+            $key == 'fill'          ? $this->SetFills($value)       : false;
             $key == 'font'          ? $this->SetFonts($value)       : false;
             $key == 'height'        ? $this->SetHeights($value)     : false;
             $key == 'style'         ? $this->SetStyles($value)      : false;

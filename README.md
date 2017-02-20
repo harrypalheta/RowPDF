@@ -1,2 +1,2 @@
 # RowPDF
-Class for FPDF
+Class for FPDF 1.7
