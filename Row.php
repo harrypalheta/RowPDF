@@ -1,5 +1,5 @@
 <?php
-require('fpdf17/fpdf.php');
+require('fpdf.php');
 
 class Row extends FPDF
 {
@@ -12,14 +12,13 @@ class Row extends FPDF
     var $sizes;
     var $styles;
     var $valigns;
-    var $widths;   
-    var $resetar;   
+    var $widths;
+    var $resetar;
 
-   function __construct()
-       {
-          parent::FPDF();
-       }
-    
+    function __construct(){
+        parent::__construct();
+    }
+
     function SetAligns($a) {
         //Set the array of column alignments
         $this->aligns = $a;
@@ -55,7 +54,7 @@ class Row extends FPDF
     function SetStyles($s){
         $this->styles = $s;
     }
-    
+
     function SetVAligns($v){
         $this->valigns = $v;
     }
@@ -66,12 +65,12 @@ class Row extends FPDF
     }
 
     function ResetConfig($r) {
-        
+
         $this->resetar = $r;
     }
 
-    function Row($data) {  
-        
+    function Row($data) {
+
         //Calculate the height of the row
         $nb = 0;
         for ($i = 0; $i < count($data); $i++) {
@@ -96,7 +95,7 @@ class Row extends FPDF
             }
             if ( isset($this->fontes) || isset($this->styles)  || isset($this->sizes) )
                 $this->SetFont($fonte, $estilo, $tamanho);
-            
+
             $nb = max($nb, $this->NbLines($this->widths[$i], $data[$i])); // retorna o maior número de linhas
         }
 
@@ -107,7 +106,7 @@ class Row extends FPDF
             $diff = $nb - $this->NbLines($this->widths[$i], $data[$i]); // diferença entre a maior linha e a linha atual
             if ($diff > 0) {
                 for ($j = 0; $j < ($diff); $j++){
-                    if (!$this->valigns || $v == 'T' )
+                    if ($v != 'M' && $v != 'B')
                         $data[$i].="\n ";
                     if ($v == 'M' && $j < ($diff/2))
                         $data[$i] = "\n".$data[$i];
@@ -135,22 +134,22 @@ class Row extends FPDF
             } else {
                 $bfc = isset($this->backgrounds[$i]) ? $this->backgrounds[$i] : false;
             }
-    
+
             // Array Fill Color
             if(!is_null($this->fills)){
                 if (!is_array($this->fills)) {
                     $fi = is_integer($this->fills) ? $this->fills : false;
                 } else {
                     $fi = isset($this->fills[$i]) ? $this->fills[$i] : 255;
-                }   
-                
+                }
+
                 if (!is_array($fi)){
-                    $this->SetFillColor($fi);    
+                    $this->SetFillColor($fi);
                 } else {
                     $this->SetFillColor($fi[0],$fi[1],$fi[2]);
                 }
             }
-       
+
             //Save the current position
             $x = $this->GetX();
             $y = $this->GetY();
@@ -185,7 +184,7 @@ class Row extends FPDF
             }
             if ( isset($this->fontes) || isset($this->styles)  || isset($this->sizes))
                 $this->SetFont($fonte, $estilo, $tamanho);
-                
+
             //Print the text
             $this->AutoPageBreak = false;
             $this->MultiCell($w, ($this->heights ? $this->heights : 5), $data[$i], $b, $a, $bfc);
@@ -198,14 +197,14 @@ class Row extends FPDF
             $this->backgrounds  = null;
             $this->borders      = null;
             $this->fills        = null;
-            $this->fontes       = null; 
+            $this->fontes       = null;
             $this->heights      = null;
             $this->sizes        = null;
             $this->styles       = null;
-            $this->widths       = null;   
-            $this->resetar      = null;    
+            $this->widths       = null;
+            $this->resetar      = null;
         }
-       
+
         //Go to the next line
         $this->Ln($h);
     }
@@ -266,33 +265,33 @@ class Row extends FPDF
                 $i++;
         }
         return $nl;
-    } 
-    
+    }
+
     /**
          * O formato do array segue nas especificações abaixo:
-         * As chaves possíveis são: 
-         
-         * CHAVE        | OPÇÕES                                    | DESCRIÇÃO 
-         
+         * As chaves possíveis são:
+
+         * CHAVE        | OPÇÕES                                    | DESCRIÇÃO
+
          * border       : ('B' &| 'T' &| 'R' &| 'L') || 1 || 0      - string ou inteiro (bordas da celula)
          * style        : 'B' | 'I' | 'U' | ''                      - string (formato da fonte)
-         * font         : 'NomeDaFonte'                             - string (nome da fonte) 
+         * font         : 'NomeDaFonte'                             - string (nome da fonte)
          * background   : true || false                             - boolean (com fundo ou sem fundo)
-         * fill         : 0 à 255                                   - inteiro (cor do preenchimento)  
-         * size         : 4 à 62                                    - inteiro (tamanho da fonte)   
+         * fill         : 0 à 255                                   - inteiro (cor do preenchimento)
+         * size         : 4 à 62                                    - inteiro (tamanho da fonte)
          * align        : 'L' || 'R' || 'C' || 'J'                  - string (alinhamento do texto)
-         * width        : 1 a (275<landscape> || 190<portrait>)     - array (tamanho da coluna) 
+         * width        : 1 a (275<landscape> || 190<portrait>)     - array (tamanho da coluna)
          * height       : 1 a N                                     - inteiro (tamanho da altura da linha)
          * reset        : true || false                             - boolean (reseta as configurações do row)
-         * 
+         *
          * OBS: para cada CHAVE pode-se receber UM VALOR ou um ARRAY com valores
-         * 
+         *
          * @param mixed[] $config Array de configurações com chave e valores.
-         * 
+         *
          * Exemplo para colunas padronizadas (como um theader):
 
          $arrayConfig = [
-            'border'        => 1,                // aceita array também 
+            'border'        => 1,                // aceita array também
             'style'         => 'B',              // aceita array também
             'font'          => 'Helvetica',      // aceita array também
             'background'    => true,             // aceita array também
@@ -302,14 +301,14 @@ class Row extends FPDF
             'width'         => [15,40,23,20,20], // só aceita array
             'height'        => 5 ,               // só aceita inteiro
             'reset'        => true               // só aceita booleano
-         ];  
+         ];
 
          */
 
     public function RowConfig($config){
 
         $conf = (object) $config;
-        
+
         ($conf->align     ) ? $this->SetAligns     ($conf->align     ):false;
         ($conf->background) ? $this->SetBackgrounds($conf->background):false;
         ($conf->border    ) ? $this->SetBorders    ($conf->border    ):false;
