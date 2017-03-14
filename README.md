@@ -8,7 +8,7 @@ If you're using Composer to manage dependencies, you can use
 
     $ composer require setasign/fpdf:1.8.1
     
-    $ composer require rexrod/RowPDF:~
+    $ composer require rexrod/RowPDF
      
 or you can include the following in your composer.json file:
 
@@ -16,7 +16,7 @@ or you can include the following in your composer.json file:
 {
     "require": {
         "setasign/fpdf": "1.8.1",
-        "rexrod/RowPDF": ~
+        "rexrod/RowPDF": "*"
     }
 }
 ```
