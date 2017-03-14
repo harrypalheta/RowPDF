@@ -11,6 +11,7 @@ class Row extends FPDF
     var $heights;
     var $sizes;
     var $styles;
+    var $valigns;
     var $widths;   
     var $resetar;   
 
@@ -54,6 +55,10 @@ class Row extends FPDF
     function SetStyles($s){
         $this->styles = $s;
     }
+    
+    function SetVAligns($v){
+        $this->valigns = $v;
+    }
 
     function SetWidths($w) {
         //Set the array of column widths
@@ -85,7 +90,7 @@ class Row extends FPDF
             }
             // TAMANHO
             if (!is_array($this->sizes)) {
-                $tamanho = is_string($this->sizes) ? $this->sizes : false;
+                $tamanho = is_integer($this->sizes) ? $this->sizes : false;
             } else {
                 $tamanho = isset($this->sizes[$i]) ? $this->sizes[$i] : 9;
             }
@@ -98,10 +103,19 @@ class Row extends FPDF
         $h = ($this->heights ? $this->heights : 5) * $nb;
         //Concatenate with blank for background fill
         for ($i = 0; $i < count($data); $i++) {
+            $v = !is_array($this->valigns) ? $this->valigns : $this->valigns[$i];
             $diff = $nb - $this->NbLines($this->widths[$i], $data[$i]); // diferença entre a maior linha e a linha atual
             if ($diff > 0) {
-                for ($j = 0; $j < ($diff); $j++)
-                    $data[$i].="\n ";
+                for ($j = 0; $j < ($diff); $j++){
+                    if (!$this->valigns || $v == 'T' )
+                        $data[$i].="\n ";
+                    if ($v == 'M' && $j < ($diff/2))
+                        $data[$i] = "\n".$data[$i];
+                    if ($v == 'M' && $j >= ($diff/2))
+                       $data[$i] .="\n ";
+                    if ($v == 'B')
+                       $data[$i] = "\n ".$data[$i];
+                }
             }
         }
         //Issue a page break first if needed
@@ -151,6 +165,7 @@ class Row extends FPDF
                 $b = isset($this->borders[$i]) ? $this->borders[$i] : 0;
             }
             //Seta Fontes, Tamanhos e Formatos independentes
+            // FONTE
             if (!is_array($this->fontes)) {
                 $fonte = is_string($this->fontes) ? $this->fontes : false;
             } else {
@@ -164,12 +179,13 @@ class Row extends FPDF
             }
             // TAMANHO
             if (!is_array($this->sizes)) {
-                $tamanho = is_string($this->sizes) ? $this->sizes : false;
+                $tamanho = is_integer($this->sizes) ? $this->sizes : false;
             } else {
                 $tamanho = isset($this->sizes[$i]) ? $this->sizes[$i] : 9;
             }
-            if ( isset($this->fontes) || isset($this->styles)  || isset($this->sizes) )
+            if ( isset($this->fontes) || isset($this->styles)  || isset($this->sizes))
                 $this->SetFont($fonte, $estilo, $tamanho);
+                
             //Print the text
             $this->AutoPageBreak = false;
             $this->MultiCell($w, ($this->heights ? $this->heights : 5), $data[$i], $b, $a, $bfc);
@@ -271,7 +287,7 @@ class Row extends FPDF
          * 
          * OBS: para cada CHAVE pode-se receber UM VALOR ou um ARRAY com valores
          * 
-         * @param Array[] $config Array de configurações com chave e valores
+         * @param mixed[] $config Array de configurações com chave e valores.
          * 
          * Exemplo para colunas padronizadas (como um theader):
 
@@ -292,20 +308,19 @@ class Row extends FPDF
 
     public function RowConfig($config){
 
-        foreach($config as $key => $value){
-
-            $key == 'align'         ? $this->SetAligns($value)      : false;
-            $key == 'background'    ? $this->SetBackgrounds($value) : false;
-            $key == 'border'        ? $this->SetBorders($value)     : false;
-            $key == 'fill'          ? $this->SetFills($value)       : false;
-            $key == 'font'          ? $this->SetFonts($value)       : false;
-            $key == 'height'        ? $this->SetHeights($value)     : false;
-            $key == 'style'         ? $this->SetStyles($value)      : false;
-            $key == 'size'          ? $this->SetSizes($value)       : false;
-            $key == 'width'         ? $this->SetWidths($value)      : false;
-            $key == 'reset'         ? $this->ResetConfig($value)    : false;
-
-        }
+        $conf = (object) $config;
+        
+        ($conf->align     ) ? $this->SetAligns     ($conf->align     ):false;
+        ($conf->background) ? $this->SetBackgrounds($conf->background):false;
+        ($conf->border    ) ? $this->SetBorders    ($conf->border    ):false;
+        ($conf->fill      ) ? $this->SetFills      ($conf->fill      ):false;
+        ($conf->font      ) ? $this->SetFonts      ($conf->font      ):false;
+        ($conf->height    ) ? $this->SetHeights    ($conf->height    ):false;
+        ($conf->style     ) ? $this->SetStyles     ($conf->style     ):false;
+        ($conf->size      ) ? $this->SetSizes      ($conf->size      ):false;
+        ($conf->valign    ) ? $this->SetVAligns    ($conf->valign    ):false;
+        ($conf->width     ) ? $this->SetWidths     ($conf->width     ):false;
+        ($conf->reset     ) ? $this->ResetConfig   ($conf->reset     ):false;
 
     }
 
