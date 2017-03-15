@@ -1,5 +1,5 @@
 <?php
-require('fpdf.php');
+require('setasign/fpdf/fpdf.php');
 
 class Row extends FPDF
 {
