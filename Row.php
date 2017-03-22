@@ -1,7 +1,7 @@
 <?php
 require('setasign/fpdf/fpdf.php');
 
-class Row extends FPDF
+class PDF extends FPDF
 {
     var $aligns;
     var $backgrounds;
@@ -14,63 +14,48 @@ class Row extends FPDF
     var $valigns;
     var $widths;
     var $resetar;
-
     function __construct(){
         parent::__construct();
     }
-
     function SetAligns($a) {
         //Set the array of column alignments
         $this->aligns = $a;
     }
-
     function SetBackgrounds($bfc) {
         //Set the array of column alignments
         $this->backgrounds = $bfc;
     }
-
     function SetBorders($b) {
         //Set the array of borders
         $this->borders = $b;
     }
-
     function SetFills($fl){
         //Set the array of fills
         $this->fills = $fl;
     }
-
     function SetFonts($f){
         $this->fontes = $f;
     }
-
     function SetHeights($h){
         $this->heights = $h;
     }
-
     function SetSizes($si){
         $this->sizes = $si;
     }
-
     function SetStyles($s){
         $this->styles = $s;
     }
-
     function SetVAligns($v){
         $this->valigns = $v;
     }
-
     function SetWidths($w) {
         //Set the array of column widths
         $this->widths = $w;
     }
-
     function ResetConfig($r) {
-
         $this->resetar = $r;
     }
-
     function Row($data) {
-
         //Calculate the height of the row
         $nb = 0;
         for ($i = 0; $i < count($data); $i++) {
@@ -95,10 +80,8 @@ class Row extends FPDF
             }
             if ( isset($this->fontes) || isset($this->styles)  || isset($this->sizes) )
                 $this->SetFont($fonte, $estilo, $tamanho);
-
             $nb = max($nb, $this->NbLines($this->widths[$i], $data[$i])); // retorna o maior número de linhas
         }
-
         $h = ($this->heights ? $this->heights : 5) * $nb;
         //Concatenate with blank for background fill
         for ($i = 0; $i < count($data); $i++) {
@@ -127,14 +110,12 @@ class Row extends FPDF
             } else {
                 $a = isset($this->aligns[$i]) ? $this->aligns[$i] : 'L';
             }
-
             // Array Backgrounds
             if (!is_array($this->backgrounds)) {
                 $bfc = $this->backgrounds == true ? true : false;
             } else {
                 $bfc = isset($this->backgrounds[$i]) ? $this->backgrounds[$i] : false;
             }
-
             // Array Fill Color
             if(!is_null($this->fills)){
                 if (!is_array($this->fills)) {
@@ -142,24 +123,22 @@ class Row extends FPDF
                 } else {
                     $fi = isset($this->fills[$i]) ? $this->fills[$i] : 255;
                 }
-
                 if (!is_array($fi)){
                     $this->SetFillColor($fi);
                 } else {
                     $this->SetFillColor($fi[0],$fi[1],$fi[2]);
                 }
             }
-
             //Save the current position
             $x = $this->GetX();
             $y = $this->GetY();
             //Draw the border
-            if (is_null($this->borders)) {
+            if (is_null($this->borders) && $this->borders!=0) {
                 $this->Rect($x, $y, $w, $h);
             }
             // Array para setar bordas independentes
             if (!is_array($this->borders)) {
-                $b = $this->borders == 1 ? 1 : 0;
+                $b = $this->borders;
             } else {
                 $b = isset($this->borders[$i]) ? $this->borders[$i] : 0;
             }
@@ -184,15 +163,14 @@ class Row extends FPDF
             }
             if ( isset($this->fontes) || isset($this->styles)  || isset($this->sizes))
                 $this->SetFont($fonte, $estilo, $tamanho);
-
             //Print the text
             $this->AutoPageBreak = false;
             $this->MultiCell($w, ($this->heights ? $this->heights : 5), $data[$i], $b, $a, $bfc);
             //Put the position to the right of the cell
             $this->SetXY($x + $w, $y);
         }
-
         if ($this->resetar){
+            $this->valigns      = null;
             $this->aligns       = null;
             $this->backgrounds  = null;
             $this->borders      = null;
@@ -204,18 +182,15 @@ class Row extends FPDF
             $this->widths       = null;
             $this->resetar      = null;
         }
-
         //Go to the next line
         $this->Ln($h);
     }
-
     function CheckPageBreak($h)
     {
         //If the height h would cause an overflow, add a new page immediately
         if($this->GetY()+$h>$this->PageBreakTrigger)
             $this->AddPage($this->CurOrientation);
     }
-
     function NbLines($w,$txt)
     {
         //Computes the number of lines a MultiCell of width w will take
@@ -266,13 +241,10 @@ class Row extends FPDF
         }
         return $nl;
     }
-
     /**
          * O formato do array segue nas especificações abaixo:
          * As chaves possíveis são:
-
          * CHAVE        | OPÇÕES                                    | DESCRIÇÃO
-
          * border       : ('B' &| 'T' &| 'R' &| 'L') || 1 || 0      - string ou inteiro (bordas da celula)
          * style        : 'B' | 'I' | 'U' | ''                      - string (formato da fonte)
          * font         : 'NomeDaFonte'                             - string (nome da fonte)
@@ -289,26 +261,22 @@ class Row extends FPDF
          * @param mixed[] $config Array de configurações com chave e valores.
          *
          * Exemplo para colunas padronizadas (como um theader):
-
          $arrayConfig = [
+            'align'         => 'C',              // aceita array também
             'border'        => 1,                // aceita array também
             'style'         => 'B',              // aceita array também
             'font'          => 'Helvetica',      // aceita array também
             'background'    => true,             // aceita array também
             'fill'          => 240, // cinza     // aceita array também
             'size'          => 9,                // aceita array também
-            'align'         => 'C',              // aceita array também
+            'valign'        => 'M',              // aceita array também
             'width'         => [15,40,23,20,20], // só aceita array
             'height'        => 5 ,               // só aceita inteiro
-            'reset'        => true               // só aceita booleano
+            'reset'         => true              // só aceita booleano
          ];
-
          */
-
     public function RowConfig($config){
-
         $conf = (object) $config;
-
         ($conf->align     ) ? $this->SetAligns     ($conf->align     ):false;
         ($conf->background) ? $this->SetBackgrounds($conf->background):false;
         ($conf->border    ) ? $this->SetBorders    ($conf->border    ):false;
@@ -320,25 +288,19 @@ class Row extends FPDF
         ($conf->valign    ) ? $this->SetVAligns    ($conf->valign    ):false;
         ($conf->width     ) ? $this->SetWidths     ($conf->width     ):false;
         ($conf->reset     ) ? $this->ResetConfig   ($conf->reset     ):false;
-
     }
-
     // Funções adicionais para calcular intervalos
-
     // Function for sum intervals of an array
     function array_sum_interval($array_external, $interval){
-
         $n_interval=explode(":", $interval);
         $sum = 0;
         for($i=$n_interval[0]; $i < ($n_interval[1]+1) ; $i++){
             $sum += $array_external[$i];
         }
         return $sum;
-
     }
     // Function for sum a interval of an array
     function array_sum_intervals($array_external, $intervals){
-
         $n_intervals=explode(";", $intervals);
         $array_amount = count($n_intervals);
         $result = 0;
@@ -346,9 +308,7 @@ class Row extends FPDF
             $result += $this->array_sum_interval($array_external, $n_intervals[$i]);
         }
         return $result;
-
     }
-
     // Matriz Transposta - transforma array dados de linhas em colunas
     function flipDiagonally($arr)
     {
@@ -360,8 +320,5 @@ class Row extends FPDF
         }
         return $out;
     }
-
-
-
 }
 ?>
