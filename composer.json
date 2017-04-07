@@ -1,6 +1,6 @@
 {
     "name": "rexrod/rowpdf",
-    "description": "Class for to complement FPDF.",
+    "description": "Complementary class for FPDF.",
     "require": {
         "setasign/fpdf": "1.*"
     },
