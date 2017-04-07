@@ -1,0 +1,14 @@
+{
+    "name": "rexrod/rowpdf",
+    "description": "Class for to complement FPDF.",
+    "require": {
+        "setasign/fpdf": "1.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Harryson Palheta",
+            "email": "harryson.palheta@gmail.com"
+        }
+    ]
+}
