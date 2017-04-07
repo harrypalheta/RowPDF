@@ -6,17 +6,20 @@ Class for >=FPDF 1.7. Not tested in previous versions.
 
 If you're using Composer to manage dependencies, you can use
 
-    $ composer require setasign/fpdf:1.8.1
     
-    $ composer require rexrod/RowPDF
+    $ composer require rexrod/rowpdf
      
 or you can include the following in your composer.json file:
 
 ```json
 {
     "require": {
-        "setasign/fpdf": "1.8.1",
-        "rexrod/RowPDF": "*"
+        "rexrod/RowPDF": "0.8"
     }
 }
+```
+After use
+
+```shell
+$ composer install
 ```
